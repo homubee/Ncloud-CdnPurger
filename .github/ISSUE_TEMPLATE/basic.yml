@@ -16,8 +16,8 @@ body:
       label: TODO
       description: Write a list about what to do!
       value: |
-      "- [ ] TODO1"
-      "- [ ] TODO2"
+        - [ ] TODO1
+        - [ ] TODO2
     validations:
       required: false
   - type: textarea
