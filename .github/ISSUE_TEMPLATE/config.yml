@@ -1,0 +1,30 @@
+name: Basic issue template
+description: An issue template For general purpose.
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Issue Description
+      description: Write about your issue.
+      placeholder: Tell us what you see and what we should do!
+      value: "A bug happened! Should fix ABC and ..."
+    validations:
+      required: true
+  - type: markdown
+    id: todo
+    attributes:
+      label: TODO
+      description: Write a list about what to do!
+      value: |
+      - [ ] TODO1
+      - [ ] TODO2
+    validations:
+      required: false
+  - type: textarea
+    id: etc
+    attributes:
+      label: ETC.
+      description: Note anything you need.
+      placeholder: Tell us what to remember!
+    validations:
+      required: false
