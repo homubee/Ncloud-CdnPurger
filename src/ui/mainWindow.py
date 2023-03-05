@@ -13,12 +13,12 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         self.settingData: dict
 
+        self.setUiFunc()
+
         if (SystemUtil.isFileExist("./api_settings.json")):
             with open("./api_settings.json", "r", encoding="utf-8") as file:
                 self.settingData = json.load(file)
                 self.setSettings()
-
-        self.setUiFunc()
 
         self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
 
@@ -28,6 +28,9 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.okBtn.clicked.connect(self.okFunc)
         self.resetBtn.clicked.connect(self.resetFunc)
         self.saveBtn.clicked.connect(self.saveFunc)
+
+        self.radioButton_Yes.toggled.connect(self.checkDomainEdit)
+
         self.action_fileMenu.triggered.connect(qApp.quit)
         self.action_KeySetting.triggered.connect(self.openKeySettingDialog)
         self.versionMenu.aboutToShow.connect(self.versionInfoFunc)
@@ -92,6 +95,13 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
             json.dump(data, file)
         
         self.statusBar().showMessage("Setting saved")
+    
+    def checkDomainEdit(self):
+        isWholeDomain = self.radioButton_Yes.isChecked()
+        if isWholeDomain:
+            self.domainEdit.setDisabled(True)
+        else:
+            self.domainEdit.setDisabled(False)
     
     def openKeySettingDialog(self):
         self.keySettingDialog = KeySettingDialog()
