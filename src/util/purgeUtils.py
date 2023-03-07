@@ -112,7 +112,7 @@ class CdnPlusPurgeApiHandler(ApiHandler):
         elif (response.status_code == 500):
             return response.status_code, result["responseError"]["returnCode"], result["responseError"]["returnMessage"]
         else:
-            return -1,-1,"Unexpected Error"
+            return response.status_code,-1,"Unexpected Error"
 
 
 class PurgeUtil:

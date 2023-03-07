@@ -1,7 +1,7 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, qApp
 from PyQt5.QtGui import QIcon
-from util.purgeUtils import CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHandler
+from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHandler
 from util.systemUtils import SystemUtil
 from ui.dialog import KeySettingDialog, MessageDialog
 import json
@@ -45,6 +45,8 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.radioButton_Files.setChecked(not self.settingData["isWholePurge"] and not self.settingData["isDirPurge"])
 
     def okFunc(self):
+        if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
+            return
         if (self.cdnInstanceNo.text() == ""):
             return
         cdnInstanceNo: int = int(self.cdnInstanceNo.text())
@@ -75,7 +77,7 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         cdnPlusPurgeQueryInfo = CdnPlusPurgeQueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, isWholePurge, targetFileList, targetDirectoryName, "JSON")
         cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
         statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
-        self.messageDialog = MessageDialog("Status Code : " + str(statusCode) + "\n\n" + "Return Code : " +  returnCode + "\n\n" + "Return Message : " + returnMessage)
+        self.messageDialog = MessageDialog(self, 2, "Status Code : " + str(statusCode), "Return Code : " +  returnCode, "Return Message : " + returnMessage)
         self.statusBar().showMessage("OK")
     
     def resetFunc(self):
@@ -112,7 +114,7 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
             self.pathEdit.setDisabled(False)
     
     def openKeySettingDialog(self):
-        self.keySettingDialog = KeySettingDialog()
+        self.keySettingDialog = KeySettingDialog(self)
     
     def versionInfoFunc(self):
-        self.messageDialog = MessageDialog("CdnPurger 0.9.0\n\nCopyright 2023 Homubee")
+        self.messageDialog = MessageDialog(self, 2, "CdnPurger 0.9.1", "Copyright 2023 Homubee")
