@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>KeySettingDialog</class>
+ <widget class="QDialog" name="KeySettingDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>250</width>
+    <width>260</width>
     <height>170</height>
    </rect>
   </property>
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <widget class="QGroupBox" name="groupBox_access">
+    <widget class="QGroupBox" name="accessGroupBox">
      <property name="title">
       <string>Access Key</string>
      </property>
@@ -27,7 +27,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_secret">
+    <widget class="QGroupBox" name="secretGroupBox">
      <property name="title">
       <string>Secret Key</string>
      </property>

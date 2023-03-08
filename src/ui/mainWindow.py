@@ -25,24 +25,24 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.show()
     
     def setUiFunc(self):
-        self.okBtn.clicked.connect(self.okFunc)
-        self.resetBtn.clicked.connect(self.resetFunc)
-        self.saveBtn.clicked.connect(self.saveFunc)
+        self.okButton.clicked.connect(self.okFunc)
+        self.resetButton.clicked.connect(self.resetFunc)
+        self.saveButton.clicked.connect(self.saveFunc)
 
-        self.radioButton_Yes.toggled.connect(self.checkDomainEdit)
-        self.radioButton_Whole.toggled.connect(self.checkPathEdit)
+        self.radioButton_isWholeDomain_Yes.toggled.connect(self.checkDomainEdit)
+        self.radioButton_isWholePurge_Whole.toggled.connect(self.checkPathEdit)
 
-        self.action_fileMenu.triggered.connect(qApp.quit)
-        self.action_KeySetting.triggered.connect(self.openKeySettingDialog)
+        self.action_quit.triggered.connect(qApp.quit)
+        self.action_keySetting.triggered.connect(self.openKeySettingDialog)
         self.versionMenu.aboutToShow.connect(self.versionInfoFunc)
     
     def setSettings(self):
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
-        self.radioButton_Yes.setChecked(self.settingData["isWholeDomain"])
-        self.radioButton_No.setChecked(not self.settingData["isWholeDomain"])
-        self.radioButton_Whole.setChecked(self.settingData["isWholePurge"])
-        self.radioButton_Directory.setChecked(self.settingData["isDirPurge"])
-        self.radioButton_Files.setChecked(not self.settingData["isWholePurge"] and not self.settingData["isDirPurge"])
+        self.radioButton_isWholeDomain_Yes.setChecked(self.settingData["isWholeDomain"])
+        self.radioButton_isWholeDomain_No.setChecked(not self.settingData["isWholeDomain"])
+        self.radioButton_isWholePurge_Whole.setChecked(self.settingData["isWholePurge"])
+        self.radioButton_isWholePurge_Directory.setChecked(self.settingData["isDirPurge"])
+        self.radioButton_isWholePurge_Files.setChecked(not self.settingData["isWholePurge"] and not self.settingData["isDirPurge"])
 
     def okFunc(self):
         if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
@@ -52,9 +52,9 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
             self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
             return
         cdnInstanceNo: int = int(self.cdnInstanceNo.text())
-        isWholeDomain: bool = self.radioButton_Yes.isChecked()
-        isWholePurge: bool = self.radioButton_Whole.isChecked()
-        isDirPurge: bool = self.radioButton_Directory.isChecked()
+        isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
+        isWholePurge: bool = self.radioButton_isWholePurge_Whole.isChecked()
+        isDirPurge: bool = self.radioButton_isWholePurge_Directory.isChecked()
         domainText: str = self.domainEdit.toPlainText()
         pathText: str = self.pathEdit.toPlainText()
 
@@ -93,9 +93,9 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
             return
         with open("./api_settings.json", "w", encoding="utf-8") as file:
             cdnInstanceNo: int = int(self.cdnInstanceNo.text())
-            isWholeDomain: bool = self.radioButton_Yes.isChecked()
-            isWholePurge: bool = self.radioButton_Whole.isChecked()
-            isDirPurge: bool = self.radioButton_Directory.isChecked()
+            isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
+            isWholePurge: bool = self.radioButton_isWholePurge_Whole.isChecked()
+            isDirPurge: bool = self.radioButton_isWholePurge_Directory.isChecked()
             
             data = {"cdnInstanceNo" : cdnInstanceNo, "isWholeDomain" : isWholeDomain, "isWholePurge" : isWholePurge, "isDirPurge" : isDirPurge}
             json.dump(data, file)
@@ -103,14 +103,14 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.statusBar().showMessage("Setting saved")
     
     def checkDomainEdit(self):
-        isWholeDomain = self.radioButton_Yes.isChecked()
+        isWholeDomain = self.radioButton_isWholeDomain_Yes.isChecked()
         if isWholeDomain:
             self.domainEdit.setDisabled(True)
         else:
             self.domainEdit.setDisabled(False)
     
     def checkPathEdit(self):
-        isWholePurge = self.radioButton_Whole.isChecked()
+        isWholePurge = self.radioButton_isWholePurge_Whole.isChecked()
         if isWholePurge:
             self.pathEdit.setDisabled(True)
         else:
