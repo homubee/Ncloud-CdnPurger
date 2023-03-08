@@ -214,3 +214,4 @@ api_settings.json
 
 # UI python file
 res/ui/*.py
+.qt_for_python
