@@ -46,8 +46,10 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
     def okFunc(self):
         if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
+            self.messageDialog = MessageDialog(self, 0, "Ncloud API key 값을 설정하십시오.")
             return
         if (self.cdnInstanceNo.text() == ""):
+            self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
             return
         cdnInstanceNo: int = int(self.cdnInstanceNo.text())
         isWholeDomain: bool = self.radioButton_Yes.isChecked()
@@ -78,15 +80,16 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
         statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
         self.messageDialog = MessageDialog(self, 2, "Status Code : " + str(statusCode), "Return Code : " +  returnCode, "Return Message : " + returnMessage)
-        self.statusBar().showMessage("OK")
+        self.statusBar().showMessage("API call successed")
     
     def resetFunc(self):
         self.domainEdit.clear()
         self.pathEdit.clear()
-        self.statusBar().showMessage("reset")
+        self.statusBar().showMessage("Text cleared")
     
     def saveFunc(self):
         if (self.cdnInstanceNo.text() == ""):
+            self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
             return
         with open("./api_settings.json", "w", encoding="utf-8") as file:
             cdnInstanceNo: int = int(self.cdnInstanceNo.text())

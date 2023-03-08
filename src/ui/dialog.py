@@ -11,13 +11,8 @@ class Dialog(QWidget):
         self.parentWindow = parent
     
     def setPositionCenter(self):
-        print(self.sizeIncrement().width())
-        print(self.sizeIncrement().height())
         offsetWidth = int((self.parentWindow.width() - self.width()) / 2)
         offsetHeight = int((self.parentWindow.height() - self.height()) / 2)
-
-        print(offsetWidth)
-        print(offsetHeight)
 
         self.move(self.parentWindow.x()+offsetWidth, self.parentWindow.y()+offsetHeight)
 
@@ -43,6 +38,10 @@ class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui
         # if file does not exist, make new .env file
         SystemUtil.mkFile("./.env")
         envFile = dotenv.find_dotenv()
+
+        if self.accessKeyInput.text() == "" or self.secretKeyInput.text() == "":
+            self.messageDialog = MessageDialog(self, 0, "Key 값을 모두 입력해주십시오.")
+            return
 
         dotenv.set_key(envFile, "ACCESS_KEY", self.accessKeyInput.text())
         dotenv.set_key(envFile, "SECRET_KEY", self.secretKeyInput.text())
