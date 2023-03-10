@@ -25,15 +25,20 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.show()
     
     def setUiFunc(self):
+        # Set pushButton event
         self.okButton.clicked.connect(self.okFunc)
         self.resetButton.clicked.connect(self.resetFunc)
         self.saveButton.clicked.connect(self.saveFunc)
 
+        # Set radioButton event
         self.radioButton_isWholeDomain_Yes.toggled.connect(self.checkDomainEdit)
         self.radioButton_isWholePurge_Whole.toggled.connect(self.checkPathEdit)
 
+        # Set menuAction event
         self.action_exit.triggered.connect(qApp.quit)
+
         self.action_keySetting.triggered.connect(self.openKeySettingDialog)
+        self.action_clearSetting.triggered.connect(self.removeKeySetting)
         self.action_about.triggered.connect(self.versionInfoFunc)
     
     def setSettings(self):
@@ -119,5 +124,30 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
     def openKeySettingDialog(self):
         self.keySettingDialog = KeySettingDialog(self)
     
+    def removeKeySetting(self):
+        SystemUtil.removeFile("./.env")
+        SystemUtil.removeFile("./api_settings.json")
+
+        self.clearSetting()
+
+        self.messageDialog = MessageDialog(self, 0, "설정이 초기화되었습니다.")
+        self.statusBar().showMessage("Setting cleared")
+    
     def versionInfoFunc(self):
         self.messageDialog = MessageDialog(self, 2, "CdnPurger 0.9.1", "Copyright 2023 Homubee")
+
+    def clearSetting(self):
+        # Disable exculsive setting (to clear radio button setting)
+        self.buttonGroup_IsWholeDomain.setExclusive(False)
+        self.buttonGroup_isWholePurge.setExclusive(False)
+
+        self.cdnInstanceNo.clear()
+        self.radioButton_isWholeDomain_Yes.setChecked(False)
+        self.radioButton_isWholeDomain_No.setChecked(False)
+        self.radioButton_isWholePurge_Whole.setChecked(False)
+        self.radioButton_isWholePurge_Directory.setChecked(False)
+        self.radioButton_isWholePurge_Files.setChecked(False)
+
+        # Active exculsive setting
+        self.buttonGroup_IsWholeDomain.setExclusive(True)
+        self.buttonGroup_isWholePurge.setExclusive(True)

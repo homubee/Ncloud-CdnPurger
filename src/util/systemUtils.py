@@ -14,8 +14,14 @@ class SystemUtil:
 
     def isFileExist(filepath: str):
         return os.path.exists(filepath)
+
+    def removeFile(filepath: str) -> bool:
+        check: bool = SystemUtil.isFileExist(filepath)
+        if check:
+            os.remove(filepath)
+        return check
     
-    def mkFile(filepath: str):
-        if (not os.path.exists(filepath)):
+    def makeFile(filepath: str):
+        if not SystemUtil.isFileExist(filepath):
             with open(filepath, "w", encoding="utf-8") as file:
                 pass
