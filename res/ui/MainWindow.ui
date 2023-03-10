@@ -200,28 +200,46 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="filemenu">
+   <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>파일</string>
+     <string>File</string>
+    </property>
+    <addaction name="action_exit"/>
+   </widget>
+   <widget class="QMenu" name="menuVersion">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="action_help"/>
+    <addaction name="action_about"/>
+   </widget>
+   <widget class="QMenu" name="menuSetting">
+    <property name="title">
+     <string>Setting</string>
     </property>
     <addaction name="action_keySetting"/>
-    <addaction name="action_quit"/>
+    <addaction name="action_clearSetting"/>
    </widget>
-   <widget class="QMenu" name="versionMenu">
+   <widget class="QMenu" name="menuWindow">
     <property name="title">
-     <string>버전</string>
+     <string>Window</string>
     </property>
+    <addaction name="action_minimize"/>
+    <addaction name="action_maximize"/>
+    <addaction name="action_normal"/>
    </widget>
-   <addaction name="filemenu"/>
-   <addaction name="versionMenu"/>
+   <addaction name="menuFile"/>
+   <addaction name="menuSetting"/>
+   <addaction name="menuWindow"/>
+   <addaction name="menuVersion"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="action_quit">
+  <action name="action_exit">
    <property name="text">
     <string>Exit</string>
    </property>
    <property name="shortcut">
-    <string>Esc</string>
+    <string>Ctrl+E</string>
    </property>
   </action>
   <action name="action_keySetting">
@@ -235,11 +253,59 @@
     <string>Ctrl+K</string>
    </property>
   </action>
+  <action name="action_help">
+   <property name="text">
+    <string>Help</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>About</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="action_minimize">
+   <property name="text">
+    <string>Minimize</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+N</string>
+   </property>
+  </action>
+  <action name="action_maximize">
+   <property name="text">
+    <string>Maximize</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+M</string>
+   </property>
+  </action>
+  <action name="action_normal">
+   <property name="text">
+    <string>Normal</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="action_clearSetting">
+   <property name="text">
+    <string>Clear Setting</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="buttonGroup_IsWholeDomain"/>
   <buttongroup name="buttonGroup_isWholePurge"/>
+  <buttongroup name="buttonGroup_IsWholeDomain"/>
  </buttongroups>
 </ui>

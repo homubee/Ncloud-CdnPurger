@@ -32,9 +32,9 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.radioButton_isWholeDomain_Yes.toggled.connect(self.checkDomainEdit)
         self.radioButton_isWholePurge_Whole.toggled.connect(self.checkPathEdit)
 
-        self.action_quit.triggered.connect(qApp.quit)
+        self.action_exit.triggered.connect(qApp.quit)
         self.action_keySetting.triggered.connect(self.openKeySettingDialog)
-        self.versionMenu.aboutToShow.connect(self.versionInfoFunc)
+        self.action_about.triggered.connect(self.versionInfoFunc)
     
     def setSettings(self):
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
