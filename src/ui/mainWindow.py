@@ -5,8 +5,12 @@ from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHan
 from util.systemUtils import SystemUtil
 from ui.dialog import KeySettingDialog, MessageDialog
 import json
+from typing import Final
 
 class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/MainWindow.ui"))[0]):
+
+    VERSION: Final = "0.9.2"
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -39,7 +43,13 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         self.action_keySetting.triggered.connect(self.openKeySettingDialog)
         self.action_clearSetting.triggered.connect(self.removeKeySetting)
-        self.action_about.triggered.connect(self.versionInfoFunc)
+
+        self.action_minimize.triggered.connect(self.minimizeWindow)
+        self.action_maximize.triggered.connect(self.maximizeWindow)
+        self.action_normal.triggered.connect(self.makeNormalWindow)
+
+        self.action_help.triggered.connect(self.showHelpMessage)
+        self.action_about.triggered.connect(self.showInfoMessage)
     
     def setSettings(self):
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
@@ -133,8 +143,20 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.messageDialog = MessageDialog(self, 0, "설정이 초기화되었습니다.")
         self.statusBar().showMessage("Setting cleared")
     
-    def versionInfoFunc(self):
-        self.messageDialog = MessageDialog(self, 2, "CdnPurger 0.9.1", "Copyright 2023 Homubee")
+    def minimizeWindow(self):
+        self.showMinimized()
+
+    def maximizeWindow(self):
+        self.showMaximized()
+
+    def makeNormalWindow(self):
+        self.showNormal()
+
+    def showHelpMessage(self):
+        self.messageDialog = MessageDialog(self, 2, "1. Setting - Key Setting에서 Access Key와 Secret Key 값을 설정합니다.", "2. 프로그램 중앙의 입력창 내용을 작성합니다.", "3. OK 버튼을 눌러 API를 전송합니다.")
+
+    def showInfoMessage(self):
+        self.messageDialog = MessageDialog(self, 2, "NCloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
 
     def clearSetting(self):
         # Disable exculsive setting (to clear radio button setting)
