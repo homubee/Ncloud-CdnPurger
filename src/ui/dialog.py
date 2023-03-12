@@ -36,7 +36,7 @@ class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui
     def accepted(self):
         # .env setting
         # if file does not exist, make new .env file
-        SystemUtil.mkFile("./.env")
+        SystemUtil.makeFile("./.env")
         envFile = dotenv.find_dotenv()
 
         if self.accessKeyInput.text() == "" or self.secretKeyInput.text() == "":

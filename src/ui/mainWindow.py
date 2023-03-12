@@ -5,8 +5,12 @@ from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHan
 from util.systemUtils import SystemUtil
 from ui.dialog import KeySettingDialog, MessageDialog
 import json
+from typing import Final
 
 class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/MainWindow.ui"))[0]):
+
+    VERSION: Final = "0.9.2"
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -25,16 +29,27 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.show()
     
     def setUiFunc(self):
+        # Set pushButton event
         self.okButton.clicked.connect(self.okFunc)
         self.resetButton.clicked.connect(self.resetFunc)
         self.saveButton.clicked.connect(self.saveFunc)
 
+        # Set radioButton event
         self.radioButton_isWholeDomain_Yes.toggled.connect(self.checkDomainEdit)
         self.radioButton_isWholePurge_Whole.toggled.connect(self.checkPathEdit)
 
-        self.action_quit.triggered.connect(qApp.quit)
+        # Set menuAction event
+        self.action_exit.triggered.connect(qApp.quit)
+
         self.action_keySetting.triggered.connect(self.openKeySettingDialog)
-        self.versionMenu.aboutToShow.connect(self.versionInfoFunc)
+        self.action_clearSetting.triggered.connect(self.removeKeySetting)
+
+        self.action_minimize.triggered.connect(self.minimizeWindow)
+        self.action_maximize.triggered.connect(self.maximizeWindow)
+        self.action_normal.triggered.connect(self.makeNormalWindow)
+
+        self.action_help.triggered.connect(self.showHelpMessage)
+        self.action_about.triggered.connect(self.showInfoMessage)
     
     def setSettings(self):
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
@@ -119,5 +134,42 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
     def openKeySettingDialog(self):
         self.keySettingDialog = KeySettingDialog(self)
     
-    def versionInfoFunc(self):
-        self.messageDialog = MessageDialog(self, 2, "CdnPurger 0.9.1", "Copyright 2023 Homubee")
+    def removeKeySetting(self):
+        SystemUtil.removeFile("./.env")
+        SystemUtil.removeFile("./api_settings.json")
+
+        self.clearSetting()
+
+        self.messageDialog = MessageDialog(self, 0, "설정이 초기화되었습니다.")
+        self.statusBar().showMessage("Setting cleared")
+    
+    def minimizeWindow(self):
+        self.showMinimized()
+
+    def maximizeWindow(self):
+        self.showMaximized()
+
+    def makeNormalWindow(self):
+        self.showNormal()
+
+    def showHelpMessage(self):
+        self.messageDialog = MessageDialog(self, 2, "1. Setting - Key Setting에서 Access Key와 Secret Key 값을 설정합니다.", "2. 프로그램 중앙의 입력창 내용을 작성합니다.", "3. OK 버튼을 눌러 API를 전송합니다.")
+
+    def showInfoMessage(self):
+        self.messageDialog = MessageDialog(self, 2, "NCloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
+
+    def clearSetting(self):
+        # Disable exculsive setting (to clear radio button setting)
+        self.buttonGroup_IsWholeDomain.setExclusive(False)
+        self.buttonGroup_isWholePurge.setExclusive(False)
+
+        self.cdnInstanceNo.clear()
+        self.radioButton_isWholeDomain_Yes.setChecked(False)
+        self.radioButton_isWholeDomain_No.setChecked(False)
+        self.radioButton_isWholePurge_Whole.setChecked(False)
+        self.radioButton_isWholePurge_Directory.setChecked(False)
+        self.radioButton_isWholePurge_Files.setChecked(False)
+
+        # Active exculsive setting
+        self.buttonGroup_IsWholeDomain.setExclusive(True)
+        self.buttonGroup_isWholePurge.setExclusive(True)
