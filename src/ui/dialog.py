@@ -1,15 +1,16 @@
 from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QIcon
-from util.systemUtils import SystemUtil
 import dotenv
+
+from util.systemUtils import SystemUtil
 
 class Dialog(QWidget):
 
     def __init__(self, parent: QWidget):
         super().__init__()
         self.parentWindow = parent
-    
+
     def setPositionCenter(self):
         offsetWidth = int((self.parentWindow.width() - self.width()) / 2)
         offsetHeight = int((self.parentWindow.height() - self.height()) / 2)
@@ -17,22 +18,25 @@ class Dialog(QWidget):
         self.move(self.parentWindow.x()+offsetWidth, self.parentWindow.y()+offsetHeight)
 
 class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui/KeySettingDialog.ui"))[0]):
+
     def __init__(self, parent: QWidget):
         super().__init__(parent)
         self.setupUi(self)
+
+        self.messageDialog: MessageDialog = None
 
         self.setPositionCenter()
 
         self.setUiFunc()
 
         self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
-        
+
         self.show()
-    
+
     def setUiFunc(self):
         self.buttonBox.accepted.connect(self.accepted)
         self.buttonBox.rejected.connect(self.rejected)
-    
+
     def accepted(self):
         # .env setting
         # if file does not exist, make new .env file
@@ -49,11 +53,12 @@ class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui
         self.close()
 
         self.messageDialog = MessageDialog(self, 0, "설정값 반영을 위해 프로그램을 재시작하십시오.")
-    
+
     def rejected(self):
         self.close()
 
 class MessageDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui/MessageDialog.ui"))[0]):
+
     def __init__(self, parent: QWidget, newlineNum, *args):
         super().__init__(parent)
         self.setupUi(self)
@@ -72,11 +77,11 @@ class MessageDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui/Me
         self.setUiFunc()
 
         self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
-        
+
         self.show()
-    
+
     def setUiFunc(self):
         self.buttonBox.accepted.connect(self.accepted)
-    
+
     def accepted(self):
         self.close()

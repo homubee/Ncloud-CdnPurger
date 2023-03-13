@@ -1,11 +1,13 @@
+import json
+from typing import Final
+
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, qApp
 from PyQt5.QtGui import QIcon
+
 from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHandler
 from util.systemUtils import SystemUtil
 from ui.dialog import KeySettingDialog, MessageDialog
-import json
-from typing import Final
 
 class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/MainWindow.ui"))[0]):
 
@@ -15,11 +17,13 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         super().__init__()
         self.setupUi(self)
 
-        self.settingData: dict
+        self.keySettingDialog: KeySettingDialog = None
+        self.messageDialog: MessageDialog = None
+        self.settingData: dict = None
 
         self.setUiFunc()
 
-        if (SystemUtil.isFileExist("./api_settings.json")):
+        if SystemUtil.isFileExist("./api_settings.json"):
             with open("./api_settings.json", "r", encoding="utf-8") as file:
                 self.settingData = json.load(file)
                 self.setSettings()
@@ -27,7 +31,7 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
 
         self.show()
-    
+
     def setUiFunc(self):
         # Set pushButton event
         self.okButton.clicked.connect(self.okFunc)
@@ -50,7 +54,7 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         self.action_help.triggered.connect(self.showHelpMessage)
         self.action_about.triggered.connect(self.showInfoMessage)
-    
+
     def setSettings(self):
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
         self.radioButton_isWholeDomain_Yes.setChecked(self.settingData["isWholeDomain"])
@@ -63,7 +67,7 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
             self.messageDialog = MessageDialog(self, 0, "Ncloud API key 값을 설정하십시오.")
             return
-        if (self.cdnInstanceNo.text() == ""):
+        if self.cdnInstanceNo.text() == "":
             self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
             return
         cdnInstanceNo: int = int(self.cdnInstanceNo.text())
@@ -78,32 +82,32 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         targetDirectoryName: str = None
 
-        if (domainText == ""):
+        if domainText == "":
             domainIdList = None
         else:
             domainIdList = domainText.strip().split("\n")
 
-        if (pathText == ""):
+        if pathText == "":
             targetFileList = None
         else:
             targetFileList = pathText.strip().split("\n")
-        
-        if (isDirPurge and targetFileList is not None):
+
+        if isDirPurge and targetFileList is not None:
             targetDirectoryName = targetFileList[0]
-        
+
         cdnPlusPurgeQueryInfo = CdnPlusPurgeQueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, isWholePurge, targetFileList, targetDirectoryName, "JSON")
         cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
         statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
         self.messageDialog = MessageDialog(self, 2, "Status Code : " + str(statusCode), "Return Code : " +  returnCode, "Return Message : " + returnMessage)
         self.statusBar().showMessage("API call successed")
-    
+
     def resetFunc(self):
         self.domainEdit.clear()
         self.pathEdit.clear()
         self.statusBar().showMessage("Text cleared")
-    
+
     def saveFunc(self):
-        if (self.cdnInstanceNo.text() == ""):
+        if self.cdnInstanceNo.text() == "":
             self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
             return
         with open("./api_settings.json", "w", encoding="utf-8") as file:
@@ -111,29 +115,29 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
             isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
             isWholePurge: bool = self.radioButton_isWholePurge_Whole.isChecked()
             isDirPurge: bool = self.radioButton_isWholePurge_Directory.isChecked()
-            
+
             data = {"cdnInstanceNo" : cdnInstanceNo, "isWholeDomain" : isWholeDomain, "isWholePurge" : isWholePurge, "isDirPurge" : isDirPurge}
             json.dump(data, file)
-        
+
         self.statusBar().showMessage("Setting saved")
-    
+
     def checkDomainEdit(self):
         isWholeDomain = self.radioButton_isWholeDomain_Yes.isChecked()
         if isWholeDomain:
             self.domainEdit.setDisabled(True)
         else:
             self.domainEdit.setDisabled(False)
-    
+
     def checkPathEdit(self):
         isWholePurge = self.radioButton_isWholePurge_Whole.isChecked()
         if isWholePurge:
             self.pathEdit.setDisabled(True)
         else:
             self.pathEdit.setDisabled(False)
-    
+
     def openKeySettingDialog(self):
         self.keySettingDialog = KeySettingDialog(self)
-    
+
     def removeKeySetting(self):
         SystemUtil.removeFile("./.env")
         SystemUtil.removeFile("./api_settings.json")
@@ -142,7 +146,7 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         self.messageDialog = MessageDialog(self, 0, "설정이 초기화되었습니다.")
         self.statusBar().showMessage("Setting cleared")
-    
+
     def minimizeWindow(self):
         self.showMinimized()
 
