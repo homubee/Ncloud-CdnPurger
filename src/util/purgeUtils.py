@@ -41,8 +41,7 @@ class CdnPlusPurgeQueryInfo(QueryInfo):
         parameterList: list[str] = []
 
         if self.cdnInstanceNo is None or self.isWholeDomain is None or self.isWholePurge is None:
-            print("필수 요소가 포함되지 않았습니다.")
-            return
+            raise Exception("required parameter is None")
 
         parameterList.append("cdnInstanceNo" + "=" + str(self.cdnInstanceNo))
         parameterList.append("isWholeDomain" + "=" + str(self.isWholeDomain).lower())
@@ -62,11 +61,10 @@ class CdnPlusPurgeQueryInfo(QueryInfo):
             parameterList.append("targetDirectoryName" + "=" + str(self.targetDirectoryName))
 
         if self.responseFormatType is not None:
-            if self.responseFormatType == "JSON" or self.responseFormatType == "XML":
+            if self.responseFormatType in ("JSON", "XML"):
                 parameterList.append("responseFormatType" + "=" + str(self.responseFormatType))
             else:
-                print("유효하지 않은 응답타입입니다.")
-                return
+                raise Exception("invalid responseFormatType")
 
         queryString: str = ""
         element: str
@@ -100,22 +98,37 @@ class CdnPlusPurgeApiHandler(ApiHandler):
         self._queryInfo: QueryInfo = cdnPlusPurgeQueryInfo
 
     def callApi(self):
-        self.queryString = self._queryInfo.makeQueryString()
-        timestamp, signingKey = PurgeUtil.make_signature("GET", self._path + self.queryString)
-        headers = {"x-ncp-apigw-timestamp" : timestamp, "x-ncp-iam-access-key" : PurgeUtil.ACCESS_KEY, "x-ncp-apigw-signature-v2" : signingKey}
-        response = requests.get(self._scheme + self._host + self._path + self.queryString, headers=headers)
+        try:
+            self.queryString = self._queryInfo.makeQueryString()
 
-        result = json.loads(response.text)
+            timestamp, signingKey = PurgeUtil.make_signature("GET", self._path + self.queryString)
+            headers = {"x-ncp-apigw-timestamp" : timestamp, "x-ncp-iam-access-key" : PurgeUtil.ACCESS_KEY, "x-ncp-apigw-signature-v2" : signingKey}
+
+            response = requests.get(self._scheme + self._host + self._path + self.queryString, headers=headers, timeout=5)
+
+            result = json.loads(response.text)
+        except:
+            raise
+
         print(result)
 
+        returnCode: str = ""
+        returnMessage: str = ""
+
         if response.status_code == 200:
-            return response.status_code, result["requestCdnPlusPurgeResponse"]["returnCode"], result["requestCdnPlusPurgeResponse"]["returnMessage"]
+            returnCode = result["requestCdnPlusPurgeResponse"]["returnCode"]
+            returnMessage = result["requestCdnPlusPurgeResponse"]["returnMessage"]
         elif response.status_code == 401:
-            return response.status_code, result["error"]["errorCode"], result["error"]["message"]
+            returnCode = result["error"]["errorCode"]
+            returnMessage = result["error"]["message"]
         elif response.status_code == 500:
-            return response.status_code, result["responseError"]["returnCode"], result["responseError"]["returnMessage"]
+            returnCode = result["responseError"]["returnCode"]
+            returnMessage = result["responseError"]["returnMessage"]
         else:
-            return response.status_code,-1,"Unexpected Error"
+            returnCode = "-1"
+            returnMessage = "Unexpected Error"
+
+        return response.status_code, returnCode, returnMessage
 
 
 class PurgeUtil:

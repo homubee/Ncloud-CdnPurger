@@ -97,9 +97,14 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         cdnPlusPurgeQueryInfo = CdnPlusPurgeQueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, isWholePurge, targetFileList, targetDirectoryName, "JSON")
         cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
-        statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
-        self.messageDialog = MessageDialog(self, 2, "Status Code : " + str(statusCode), "Return Code : " +  returnCode, "Return Message : " + returnMessage)
-        self.statusBar().showMessage("API call successed")
+
+        try:
+            statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
+        except Exception as e:
+            self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
+        else:
+            self.messageDialog = MessageDialog(self, 2, "Status Code : " + str(statusCode), "Return Code : " +  returnCode, "Return Message : " + returnMessage)
+            self.statusBar().showMessage("API call successed")
 
     def resetFunc(self):
         self.domainEdit.clear()
