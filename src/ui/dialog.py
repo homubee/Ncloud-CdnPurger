@@ -1,9 +1,8 @@
-from PyQt5 import uic
 from PyQt5.QtWidgets import QWidget
-from PyQt5.QtGui import QIcon
 import dotenv
 
 from util.systemUtils import SystemUtil
+from util.qtUtils import QtUtil
 
 class Dialog(QWidget):
 
@@ -17,7 +16,7 @@ class Dialog(QWidget):
 
         self.move(self.parentWindow.x()+offsetWidth, self.parentWindow.y()+offsetHeight)
 
-class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui/KeySettingDialog.ui"))[0]):
+class KeySettingDialog(Dialog, QtUtil.loadUiClass("./res/ui/KeySettingDialog.ui")):
 
     def __init__(self, parent: QWidget):
         super().__init__(parent)
@@ -29,7 +28,7 @@ class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui
 
         self.setUiFunc()
 
-        self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
+        self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
 
@@ -57,28 +56,31 @@ class KeySettingDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui
     def rejected(self):
         self.close()
 
-class MessageDialog(Dialog, uic.loadUiType(SystemUtil.resource_path("./res/ui/MessageDialog.ui"))[0]):
+class MessageDialog(Dialog, QtUtil.loadUiClass("./res/ui/MessageDialog.ui")):
 
     def __init__(self, parent: QWidget, newlineNum, *args):
         super().__init__(parent)
         self.setupUi(self)
 
-        text: str = ""
-        for element in args:
-            text += element
-            if element == args[-1]:
-                break
-            for i in range(0, newlineNum):
-                text += "\n"
-        self.label.setText(text)
+        self.makeMessageString(newlineNum, args)
 
         self.setPositionCenter()
 
         self.setUiFunc()
 
-        self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
+        self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
+
+    def makeMessageString(self, newlineNum, texts):
+        text: str = ""
+        for element in texts:
+            text += element
+            if element == texts[-1]:
+                break
+            for _ in range(0, newlineNum):
+                text += "\n"
+        self.label.setText(text)
 
     def setUiFunc(self):
         self.buttonBox.accepted.connect(self.accepted)

@@ -1,15 +1,14 @@
 import json
 from typing import Final
 
-from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, qApp
-from PyQt5.QtGui import QIcon
 
 from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHandler
 from util.systemUtils import SystemUtil
+from util.qtUtils import QtUtil
 from ui.dialog import KeySettingDialog, MessageDialog
 
-class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/MainWindow.ui"))[0]):
+class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     VERSION: Final = "0.9.2"
 
@@ -23,12 +22,9 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
 
         self.setUiFunc()
 
-        if SystemUtil.isFileExist("./api_settings.json"):
-            with open("./api_settings.json", "r", encoding="utf-8") as file:
-                self.settingData = json.load(file)
-                self.setSettings()
+        self.loadSettings()
 
-        self.setWindowIcon(QIcon(SystemUtil.resource_path("./res/icon/favicon.ico")))
+        self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
 
@@ -55,7 +51,11 @@ class MainWindow(QMainWindow, uic.loadUiType(SystemUtil.resource_path("./res/ui/
         self.action_help.triggered.connect(self.showHelpMessage)
         self.action_about.triggered.connect(self.showInfoMessage)
 
-    def setSettings(self):
+    def loadSettings(self):
+        if SystemUtil.isFileExist("./api_settings.json"):
+            with open("./api_settings.json", "r", encoding="utf-8") as file:
+                self.settingData = json.load(file)
+
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
         self.radioButton_isWholeDomain_Yes.setChecked(self.settingData["isWholeDomain"])
         self.radioButton_isWholeDomain_No.setChecked(not self.settingData["isWholeDomain"])

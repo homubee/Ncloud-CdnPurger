@@ -77,11 +77,11 @@ class CdnPlusPurgeQueryInfo(QueryInfo):
 
 class ApiHandler(metaclass=ABCMeta):
 
-    def __init__(self) -> None:
+    def __init__(self, queryInfo: QueryInfo) -> None:
         self._scheme: str
         self._host: str
         self._path: str
-        self._queryInfo: QueryInfo
+        self._queryInfo: QueryInfo = queryInfo
 
     @abstractmethod
     def callApi(self):
@@ -90,21 +90,19 @@ class ApiHandler(metaclass=ABCMeta):
 class CdnPlusPurgeApiHandler(ApiHandler):
 
     def __init__(self, cdnPlusPurgeQueryInfo: CdnPlusPurgeQueryInfo) -> None:
-        super().__init__()
+        super().__init__(cdnPlusPurgeQueryInfo)
 
         self._scheme: str = "https://"
         self._host: str = "ncloud.apigw.ntruss.com"
         self._path: str = "/cdn/v2/requestCdnPlusPurge?"
-        self._queryInfo: QueryInfo = cdnPlusPurgeQueryInfo
 
     def callApi(self):
         try:
-            self.queryString = self._queryInfo.makeQueryString()
+            queryString = self._queryInfo.makeQueryString()
 
-            timestamp, signingKey = PurgeUtil.make_signature("GET", self._path + self.queryString)
-            headers = {"x-ncp-apigw-timestamp" : timestamp, "x-ncp-iam-access-key" : PurgeUtil.ACCESS_KEY, "x-ncp-apigw-signature-v2" : signingKey}
+            headers = PurgeUtil.make_headers("GET", self._path + queryString)
 
-            response = requests.get(self._scheme + self._host + self._path + self.queryString, headers=headers, timeout=5)
+            response = requests.get(self._scheme + self._host + self._path + queryString, headers=headers, timeout=5)
 
             result = json.loads(response.text)
         except:
@@ -145,3 +143,13 @@ class PurgeUtil:
         message = bytes(message, 'UTF-8')
         signingKey = base64.b64encode(hmac.new(SECRET_KEY_BYTE, message, digestmod=hashlib.sha256).digest())
         return timestamp, signingKey
+
+    @staticmethod
+    def make_headers(method, pathAndQuery):
+        timestamp, signingKey = PurgeUtil.make_signature(method, pathAndQuery)
+        headers = {
+            "x-ncp-apigw-timestamp" : timestamp, 
+            "x-ncp-iam-access-key" : PurgeUtil.ACCESS_KEY, 
+            "x-ncp-apigw-signature-v2" : signingKey
+        }
+        return headers
