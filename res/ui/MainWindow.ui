@@ -154,22 +154,30 @@
     <item>
      <widget class="QLabel" name="label_domainEdit">
       <property name="text">
-       <string>Purge할 도메인명을 입력하세요.</string>
+       <string>• Purge할 도메인명을 입력하세요.</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPlainTextEdit" name="domainEdit"/>
+     <widget class="QPlainTextEdit" name="domainEdit">
+      <property name="placeholderText">
+       <string>여러 도메인 작업 시 줄을 바꿔 입력합니다.</string>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QLabel" name="label_pathEdit">
       <property name="text">
-       <string>Purge할 파일 경로명을 입력하세요.</string>
+       <string>• Purge할 파일 경로명을 입력하세요. (예) /sample/sample.jpg</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QPlainTextEdit" name="pathEdit"/>
+     <widget class="QPlainTextEdit" name="pathEdit">
+      <property name="placeholderText">
+       <string>여러 파일 작업 시 줄을 바꿔 입력합니다.</string>
+      </property>
+     </widget>
     </item>
     <item>
      <layout class="QHBoxLayout" name="submitButtonLayout" stretch="0,0">

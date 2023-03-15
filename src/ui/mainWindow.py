@@ -10,7 +10,7 @@ from ui.dialog import KeySettingDialog, MessageDialog
 
 class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
-    VERSION: Final = "0.9.2"
+    VERSION: Final = "0.9.3"
 
     def __init__(self):
         super().__init__()
@@ -22,7 +22,10 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         self.setUiFunc()
 
-        self.loadSettings()
+        try:
+            self.loadSettings()
+        except Exception as e:
+            self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
 
         self.setWindowIcon(QtUtil.getIcon())
 
@@ -30,9 +33,9 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     def setUiFunc(self):
         # Set pushButton event
-        self.okButton.clicked.connect(self.okFunc)
-        self.resetButton.clicked.connect(self.resetFunc)
-        self.saveButton.clicked.connect(self.saveFunc)
+        self.okButton.clicked.connect(self.submit)
+        self.resetButton.clicked.connect(self.resetTextEdit)
+        self.saveButton.clicked.connect(self.saveSettings)
 
         # Set radioButton event
         self.radioButton_isWholeDomain_Yes.toggled.connect(self.checkDomainEdit)
@@ -61,16 +64,19 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.radioButton_isWholeDomain_No.setChecked(not self.settingData["isWholeDomain"])
         self.radioButton_isWholePurge_Whole.setChecked(self.settingData["isWholePurge"])
         self.radioButton_isWholePurge_Directory.setChecked(self.settingData["isDirPurge"])
-        self.radioButton_isWholePurge_Files.setChecked(not self.settingData["isWholePurge"] and not self.settingData["isDirPurge"])
+        self.radioButton_isWholePurge_Files.setChecked(not self.settingData["isWholePurge"] 
+                                                       and not self.settingData["isDirPurge"])
 
-    def okFunc(self):
+    def submit(self):
         if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
             self.messageDialog = MessageDialog(self, 0, "Ncloud API key 값을 설정하십시오.")
             return
-        if self.cdnInstanceNo.text() == "":
-            self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
+
+        cdnInstanceNoStr: str = self.cdnInstanceNo.text()
+        if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
             return
-        cdnInstanceNo: int = int(self.cdnInstanceNo.text())
+
+        cdnInstanceNo: int = int(cdnInstanceNoStr)
         isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
         isWholePurge: bool = self.radioButton_isWholePurge_Whole.isChecked()
         isDirPurge: bool = self.radioButton_isWholePurge_Directory.isChecked()
@@ -82,12 +88,12 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         targetDirectoryName: str = None
 
-        if domainText == "":
+        if isWholeDomain or domainText == "":
             domainIdList = None
         else:
             domainIdList = domainText.strip().split("\n")
 
-        if pathText == "":
+        if isWholePurge or pathText == "":
             targetFileList = None
         else:
             targetFileList = pathText.strip().split("\n")
@@ -95,36 +101,51 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         if isDirPurge and targetFileList is not None:
             targetDirectoryName = targetFileList[0]
 
-        cdnPlusPurgeQueryInfo = CdnPlusPurgeQueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, isWholePurge, targetFileList, targetDirectoryName, "JSON")
+        cdnPlusPurgeQueryInfo = CdnPlusPurgeQueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, 
+                                                      isWholePurge, targetFileList, targetDirectoryName, "JSON")
         cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
 
         try:
             statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
         except Exception as e:
             self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
+            self.statusBar().showMessage("API call failed")
         else:
-            self.messageDialog = MessageDialog(self, 2, "Status Code : " + str(statusCode), "Return Code : " +  returnCode, "Return Message : " + returnMessage)
+            self.messageDialog = MessageDialog(self, 2, 
+                                               "Status Code : " + str(statusCode), 
+                                               "Return Code : " +  returnCode, 
+                                               "Return Message : " + returnMessage)
             self.statusBar().showMessage("API call successed")
 
-    def resetFunc(self):
+    def resetTextEdit(self):
         self.domainEdit.clear()
         self.pathEdit.clear()
         self.statusBar().showMessage("Text cleared")
 
-    def saveFunc(self):
-        if self.cdnInstanceNo.text() == "":
-            self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo를 입력하십시오.")
+    def saveSettings(self):
+        cdnInstanceNoStr: str = self.cdnInstanceNo.text()
+        if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
             return
         with open("./api_settings.json", "w", encoding="utf-8") as file:
-            cdnInstanceNo: int = int(self.cdnInstanceNo.text())
+            cdnInstanceNo: int = int(cdnInstanceNoStr)
             isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
             isWholePurge: bool = self.radioButton_isWholePurge_Whole.isChecked()
             isDirPurge: bool = self.radioButton_isWholePurge_Directory.isChecked()
 
-            data = {"cdnInstanceNo" : cdnInstanceNo, "isWholeDomain" : isWholeDomain, "isWholePurge" : isWholePurge, "isDirPurge" : isDirPurge}
+            data = {"cdnInstanceNo" : cdnInstanceNo, 
+                    "isWholeDomain" : isWholeDomain, 
+                    "isWholePurge" : isWholePurge, 
+                    "isDirPurge" : isDirPurge}
+
             json.dump(data, file)
 
         self.statusBar().showMessage("Setting saved")
+
+    def isCdnInstanceNoDigit(self, cdnInstanceNoStr: str):
+        if not cdnInstanceNoStr.isdigit():
+            self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo는 숫자만 입력해야 합니다.")
+            return False
+        return True
 
     def checkDomainEdit(self):
         isWholeDomain = self.radioButton_isWholeDomain_Yes.isChecked()
@@ -162,7 +183,10 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.showNormal()
 
     def showHelpMessage(self):
-        self.messageDialog = MessageDialog(self, 2, "1. Setting - Key Setting에서 Access Key와 Secret Key 값을 설정합니다.", "2. 프로그램 중앙의 입력창 내용을 작성합니다.", "3. OK 버튼을 눌러 API를 전송합니다.")
+        self.messageDialog = MessageDialog(self, 2, 
+                                           "1. Setting - Key Setting에서 Access Key와 Secret Key 값을 설정합니다.", 
+                                           "2. 프로그램 중앙의 입력창 내용을 작성합니다.", 
+                                           "3. OK 버튼을 눌러 API를 전송합니다.")
 
     def showInfoMessage(self):
         self.messageDialog = MessageDialog(self, 2, "NCloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
