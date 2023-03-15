@@ -30,7 +30,7 @@
 
 ## Build
 
-`pyinstaller -w -F -n CdnPurger -i ./res/icon/logo.ico --add-data="res;./res" src/app.py`
+`pyinstaller -w -F -n CdnPurger -i ./res/icon/logo.ico --add-data="res;./res" src/main/app.py`
 
 
 ## API Document
