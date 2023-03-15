@@ -2,7 +2,9 @@ import sys
 import os
 
 class SystemUtil:
-    def resource_path(relative_path: str):
+
+    @staticmethod
+    def resource_path(relative_path: str) -> str:
         """ Get absolute path to resource, works for dev and for PyInstaller """
         try:
             # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -12,16 +14,21 @@ class SystemUtil:
 
         return os.path.join(base_path, relative_path)
 
-    def isFileExist(filepath: str):
+    @staticmethod
+    def isFileExist(filepath: str) -> bool:
         return os.path.exists(filepath)
 
+    @staticmethod
     def removeFile(filepath: str) -> bool:
-        check: bool = SystemUtil.isFileExist(filepath)
-        if check:
+        file_exists: bool = SystemUtil.isFileExist(filepath)
+        if file_exists:
             os.remove(filepath)
-        return check
-    
-    def makeFile(filepath: str):
-        if not SystemUtil.isFileExist(filepath):
-            with open(filepath, "w", encoding="utf-8") as file:
+        return file_exists
+
+    @staticmethod
+    def makeFile(filepath: str) -> bool:
+        file_not_exists: bool = not SystemUtil.isFileExist(filepath)
+        if file_not_exists:
+            with open(filepath, "w", encoding="utf-8"):
                 pass
+        return file_not_exists
