@@ -16,15 +16,28 @@ dotenv.load_dotenv()
 
 
 class QueryInfo(metaclass=ABCMeta):
+    """ 
+    Super class for `QueryInfo`. (Abstract)
+
+    Provides `makeQueryString` method. It makes proper querystring for each API.
+    """
 
     def __init__(self) -> None:
         pass
 
     @abstractmethod
     def makeQueryString(self) -> str:
+        """ Make querystring from parameter info. """
         pass
 
 class CdnPlusPurgeQueryInfo(QueryInfo):
+    """ 
+    Concrete class of `QueryInfo`.
+
+    Has query parameter info about `cdnPlusPurge` API.
+
+    Can make querystring from property.
+    """
 
     def __init__(self, cdnInstanceNo: int, isWholeDomain: bool, domainIdList: list, isWholePurge: bool,
                  targetFileList: list, targetDirectoryName: str, responseFormatType: str) -> None:
@@ -38,6 +51,7 @@ class CdnPlusPurgeQueryInfo(QueryInfo):
         self.responseFormatType = responseFormatType
 
     def makeQueryString(self) -> str:
+        """ Make querystring by parameter info. """
         parameterList: list[str] = []
 
         if self.cdnInstanceNo is None or self.isWholeDomain is None or self.isWholePurge is None:
@@ -76,6 +90,11 @@ class CdnPlusPurgeQueryInfo(QueryInfo):
 
 
 class ApiHandler(metaclass=ABCMeta):
+    """ 
+    Super class for `ApiHandler`. (Abstract)
+
+    Provides `callApi` method. It calls api and return response info.
+    """
 
     def __init__(self, queryInfo: QueryInfo) -> None:
         self._scheme: str
@@ -85,9 +104,15 @@ class ApiHandler(metaclass=ABCMeta):
 
     @abstractmethod
     def callApi(self):
+        """ Call API. """
         pass
 
 class CdnPlusPurgeApiHandler(ApiHandler):
+    """ 
+    Concrete class of `ApiHandler`.
+
+    Can call `cdnPlusPurge` API.
+    """
 
     def __init__(self, cdnPlusPurgeQueryInfo: CdnPlusPurgeQueryInfo) -> None:
         super().__init__(cdnPlusPurgeQueryInfo)
@@ -97,6 +122,7 @@ class CdnPlusPurgeApiHandler(ApiHandler):
         self._path: str = "/cdn/v2/requestCdnPlusPurge?"
 
     def callApi(self):
+        """ Call requestCdnPlusPurge API. Return info about calling api. """
         try:
             queryString = self._queryInfo.makeQueryString()
 
@@ -130,12 +156,18 @@ class CdnPlusPurgeApiHandler(ApiHandler):
 
 
 class PurgeUtil:
+    """ 
+    Util class for purge API.
+
+    Has only static method.
+    """
 
     ACCESS_KEY: Final = os.getenv("ACCESS_KEY")
     SECRET_KEY: Final = os.getenv("SECRET_KEY")
 
     @staticmethod
     def	make_signature(method, pathAndQuery):
+        """ Make signature for ncloud api. Return `timestamp`, `signingKey` """
         timestamp = int(time.time() * 1000)
         timestamp = str(timestamp)
         SECRET_KEY_BYTE: Final = bytes(PurgeUtil.SECRET_KEY, 'UTF-8')
@@ -146,6 +178,7 @@ class PurgeUtil:
 
     @staticmethod
     def make_headers(method, pathAndQuery):
+        """ Make and return header for ncloud api. """
         timestamp, signingKey = PurgeUtil.make_signature(method, pathAndQuery)
         headers = {
             "x-ncp-apigw-timestamp" : timestamp, 

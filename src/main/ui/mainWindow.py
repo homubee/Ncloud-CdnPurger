@@ -9,6 +9,13 @@ from util.qtUtils import QtUtil
 from ui.dialog import KeySettingDialog, MessageDialog
 
 class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
+    """ 
+    It is a first ui class that will be shown to user.
+
+    The ui is displayed just by calling the constructor.
+
+    Has some methods about ui.
+    """
 
     VERSION: Final = "0.9.3"
 
@@ -32,6 +39,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.show()
 
     def setUiFunc(self):
+        """ Connect ui and function. """
         # Set pushButton event
         self.okButton.clicked.connect(self.submit)
         self.resetButton.clicked.connect(self.resetTextEdit)
@@ -45,7 +53,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.action_exit.triggered.connect(qApp.quit)
 
         self.action_keySetting.triggered.connect(self.openKeySettingDialog)
-        self.action_clearSetting.triggered.connect(self.removeKeySetting)
+        self.action_clearSetting.triggered.connect(self.removeSettingFiles)
 
         self.action_minimize.triggered.connect(self.minimizeWindow)
         self.action_maximize.triggered.connect(self.maximizeWindow)
@@ -55,6 +63,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.action_about.triggered.connect(self.showInfoMessage)
 
     def loadSettings(self):
+        """ Load settings and set setting form ui. """
         if SystemUtil.isFileExist("./api_settings.json"):
             with open("./api_settings.json", "r", encoding="utf-8") as file:
                 self.settingData = json.load(file)
@@ -68,6 +77,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
                                                        and not self.settingData["isDirPurge"])
 
     def submit(self):
+        """ Call API and get result. """
         if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
             self.messageDialog = MessageDialog(self, 0, "Ncloud API key 값을 설정하십시오.")
             return
@@ -118,11 +128,13 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
             self.statusBar().showMessage("API call successed")
 
     def resetTextEdit(self):
+        """ Reset text in TextEdit ui. """
         self.domainEdit.clear()
         self.pathEdit.clear()
         self.statusBar().showMessage("Text cleared")
 
     def saveSettings(self):
+        """ Save settings from form ui. """
         cdnInstanceNoStr: str = self.cdnInstanceNo.text()
         if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
             return
@@ -142,12 +154,14 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.statusBar().showMessage("Setting saved")
 
     def isCdnInstanceNoDigit(self, cdnInstanceNoStr: str):
+        """ Check if `isCdnInstanceNo` is digit or not. """
         if not cdnInstanceNoStr.isdigit():
             self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo는 숫자만 입력해야 합니다.")
             return False
         return True
 
     def checkDomainEdit(self):
+        """ Check settings and set `domainEdit` on/off """
         isWholeDomain = self.radioButton_isWholeDomain_Yes.isChecked()
         if isWholeDomain:
             self.domainEdit.setDisabled(True)
@@ -155,6 +169,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
             self.domainEdit.setDisabled(False)
 
     def checkPathEdit(self):
+        """ Check settings and set `pathEdit` on/off """
         isWholePurge = self.radioButton_isWholePurge_Whole.isChecked()
         if isWholePurge:
             self.pathEdit.setDisabled(True)
@@ -162,9 +177,11 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
             self.pathEdit.setDisabled(False)
 
     def openKeySettingDialog(self):
+        """ Open KeySettingDialog. """
         self.keySettingDialog = KeySettingDialog(self)
 
-    def removeKeySetting(self):
+    def removeSettingFiles(self):
+        """ Remove all setting file. """
         SystemUtil.removeFile("./.env")
         SystemUtil.removeFile("./api_settings.json")
 
@@ -174,24 +191,30 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.statusBar().showMessage("Setting cleared")
 
     def minimizeWindow(self):
+        """ Minimize window. """
         self.showMinimized()
 
     def maximizeWindow(self):
+        """ Maximize window. """
         self.showMaximized()
 
     def makeNormalWindow(self):
+        """ Make normal window. """
         self.showNormal()
 
     def showHelpMessage(self):
+        """ Open MessageDialog for help message. """
         self.messageDialog = MessageDialog(self, 2, 
                                            "1. Setting - Key Setting에서 Access Key와 Secret Key 값을 설정합니다.", 
                                            "2. 프로그램 중앙의 입력창 내용을 작성합니다.", 
                                            "3. OK 버튼을 눌러 API를 전송합니다.")
 
     def showInfoMessage(self):
+        """ Open MessageDialog for app info. """
         self.messageDialog = MessageDialog(self, 2, "NCloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
 
     def clearSetting(self):
+        """ Clear all settings. """
         # Disable exculsive setting (to clear radio button setting)
         self.buttonGroup_IsWholeDomain.setExclusive(False)
         self.buttonGroup_isWholePurge.setExclusive(False)

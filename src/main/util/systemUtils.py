@@ -2,6 +2,11 @@ import sys
 import os
 
 class SystemUtil:
+    """ 
+    Util class for path and file.
+
+    Has only static method.
+    """
 
     @staticmethod
     def resource_path(relative_path: str) -> str:
@@ -16,10 +21,12 @@ class SystemUtil:
 
     @staticmethod
     def isFileExist(filepath: str) -> bool:
+        """ Return `True` if there is file in `filepath`. Otherwise return `False`. """
         return os.path.exists(filepath)
 
     @staticmethod
     def removeFile(filepath: str) -> bool:
+        """ Remove file if it is in `filepath`, and return `True`. Otherwise do nothing, and return `False`. """
         file_exists: bool = SystemUtil.isFileExist(filepath)
         if file_exists:
             os.remove(filepath)
@@ -27,6 +34,7 @@ class SystemUtil:
 
     @staticmethod
     def makeFile(filepath: str) -> bool:
+        """ Make file if it is not in `filepath`, and return `True`. Otherwise do nothing, and return `False`. """
         file_not_exists: bool = not SystemUtil.isFileExist(filepath)
         if file_not_exists:
             filepath = filepath.replace("\\", "/")
