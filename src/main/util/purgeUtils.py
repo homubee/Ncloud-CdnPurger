@@ -134,8 +134,7 @@ class CdnPlusPurgeApiHandler(ApiHandler):
         except:
             raise
 
-        print(result)
-
+        # Make return info
         returnCode: str = ""
         returnMessage: str = ""
 

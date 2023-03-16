@@ -17,7 +17,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
     Has some methods about ui.
     """
 
-    VERSION: Final = "0.9.3"
+    VERSION: Final = "1.0.0"
 
     def __init__(self):
         super().__init__()
@@ -67,6 +67,8 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         if SystemUtil.isFileExist("./api_settings.json"):
             with open("./api_settings.json", "r", encoding="utf-8") as file:
                 self.settingData = json.load(file)
+        else:
+            return
 
         self.cdnInstanceNo.setText(str(self.settingData["cdnInstanceNo"]))
         self.radioButton_isWholeDomain_Yes.setChecked(self.settingData["isWholeDomain"])
@@ -98,6 +100,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         targetDirectoryName: str = None
 
+        # Check each parameter
         if isWholeDomain or domainText == "":
             domainIdList = None
         else:
@@ -115,6 +118,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
                                                       isWholePurge, targetFileList, targetDirectoryName, "JSON")
         cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
 
+        # Exception handling
         try:
             statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
         except Exception as e:
@@ -138,6 +142,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         cdnInstanceNoStr: str = self.cdnInstanceNo.text()
         if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
             return
+        # Write setting file
         with open("./api_settings.json", "w", encoding="utf-8") as file:
             cdnInstanceNo: int = int(cdnInstanceNoStr)
             isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
@@ -211,7 +216,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     def showInfoMessage(self):
         """ Open MessageDialog for app info. """
-        self.messageDialog = MessageDialog(self, 2, "NCloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
+        self.messageDialog = MessageDialog(self, 2, "Ncloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
 
     def clearSetting(self):
         """ Clear all settings. """
