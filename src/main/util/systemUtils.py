@@ -29,6 +29,8 @@ class SystemUtil:
     def makeFile(filepath: str) -> bool:
         file_not_exists: bool = not SystemUtil.isFileExist(filepath)
         if file_not_exists:
+            filepath = filepath.replace("\\", "/")
+            os.makedirs(filepath[:filepath.rfind("/")], exist_ok=True)
             with open(filepath, "w", encoding="utf-8"):
                 pass
         return file_not_exists
