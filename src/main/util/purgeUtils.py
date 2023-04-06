@@ -30,11 +30,11 @@ class QueryInfo(metaclass=ABCMeta):
         """ Make querystring from parameter info. """
         pass
 
-class CdnPlusPurgeQueryInfo(QueryInfo):
+class RequestCdnPlusPurge_QueryInfo(QueryInfo):
     """ 
     Concrete class of `QueryInfo`.
 
-    Has query parameter info about `cdnPlusPurge` API.
+    Has query parameter info about `requestCdnPlusPurge` API.
 
     Can make querystring from property.
     """
@@ -149,15 +149,15 @@ class ApiHandler(metaclass=ABCMeta):
         """ Call API. """
         pass
 
-class CdnPlusPurgeApiHandler(ApiHandler):
+class RequestCdnPlusPurge_ApiHandler(ApiHandler):
     """ 
     Concrete class of `ApiHandler`.
 
-    Can call `cdnPlusPurge` API.
+    Can call `requestCdnPlusPurge` API.
     """
 
-    def __init__(self, cdnPlusPurgeQueryInfo: CdnPlusPurgeQueryInfo) -> None:
-        super().__init__(cdnPlusPurgeQueryInfo)
+    def __init__(self, queryInfo: RequestCdnPlusPurge_QueryInfo) -> None:
+        super().__init__(queryInfo)
 
         self._scheme: str = "https://"
         self._host: str = "ncloud.apigw.ntruss.com"

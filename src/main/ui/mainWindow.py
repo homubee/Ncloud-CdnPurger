@@ -3,7 +3,7 @@ from typing import Final
 
 from PyQt5.QtWidgets import QMainWindow, qApp
 
-from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHandler
+from util.purgeUtils import PurgeUtil, RequestCdnPlusPurge_QueryInfo, RequestCdnPlusPurge_ApiHandler
 from util.systemUtils import SystemUtil
 from util.qtUtils import QtUtil
 from ui.dialog import KeySettingDialog, MessageDialog
@@ -124,13 +124,13 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         if isDirPurge and targetFileList is not None:
             targetDirectoryName = targetFileList[0]
 
-        cdnPlusPurgeQueryInfo = CdnPlusPurgeQueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, 
+        queryInfo = RequestCdnPlusPurge_QueryInfo(cdnInstanceNo, isWholeDomain, domainIdList, 
                                                       isWholePurge, targetFileList, targetDirectoryName, "JSON")
-        cdnPlusPurgeApiHandler = CdnPlusPurgeApiHandler(cdnPlusPurgeQueryInfo)
+        apiHandler = RequestCdnPlusPurge_ApiHandler(queryInfo)
 
         # Exception handling
         try:
-            statusCode, returnCode, returnMessage = cdnPlusPurgeApiHandler.callApi()
+            statusCode, returnCode, returnMessage = apiHandler.callApi()
         except Exception as e:
             self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
             self.statusBar().showMessage("API call failed")
