@@ -1,6 +1,7 @@
 import datetime
 
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QResizeEvent
 from PyQt5.QtWidgets import QWidget
 
 from util.systemUtils import SystemUtil
@@ -38,18 +39,39 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
         self.label_cdnInstanceId_value.setText(cdnInstanceNoStr)
         self.label_queryTime_value.setText(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-        model = QStandardItemModel()
-        model.setHorizontalHeaderLabels(["일시", "범위", "대상", "결과"])
-        model.appendRow([QStandardItem("test1"), QStandardItem("test2"), QStandardItem("test3"), QStandardItem("test4")])
-        self.tableView_historyList.setModel(model)
-
         self.setPositionCenter()
-
-        self.setUiFunc()
 
         self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
 
-    def setUiFunc(self):
-        pass
+        self.setTableUi()
+
+    def setTableUi(self):
+        model = QStandardItemModel()
+        model.setHorizontalHeaderLabels(["일시", "범위", "대상", "결과"])
+        model.appendRow([QStandardItem(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), QStandardItem("전체"), QStandardItem("test3\ntest4"), QStandardItem("success")])
+
+        # set text alignment
+        model.item(0,0).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        model.item(0,1).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+        model.item(0,3).setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.tableView_historyList.setModel(model)
+
+        # resize row
+        self.tableView_historyList.resizeRowsToContents()
+
+        # resize column
+        self.setColumnSize()
+
+    def setColumnSize(self):
+        col_width = self.tableView_historyList.width()
+        self.tableView_historyList.setColumnWidth(0, int(col_width*4/10))
+        self.tableView_historyList.setColumnWidth(1, int(col_width*1/10))
+        self.tableView_historyList.setColumnWidth(2, int(col_width*3/10))
+        self.tableView_historyList.setColumnWidth(3, int(col_width*2/10))
+
+    def resizeEvent(self, a0: QResizeEvent) -> None:
+        self.setColumnSize()
+        return super().resizeEvent(a0)
