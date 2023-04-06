@@ -7,6 +7,7 @@ from util.purgeUtils import PurgeUtil, CdnPlusPurgeQueryInfo, CdnPlusPurgeApiHan
 from util.systemUtils import SystemUtil
 from util.qtUtils import QtUtil
 from ui.dialog import KeySettingDialog, MessageDialog
+from ui.widget import PurgeHistoryWidget
 
 class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
     """ 
@@ -41,6 +42,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
     def setUiFunc(self):
         """ Connect ui and function. """
         # Set pushButton event
+        self.checkLogButton.clicked.connect(self.openPurgeHistoryWidget)
         self.okButton.clicked.connect(self.submit)
         self.resetButton.clicked.connect(self.resetTextEdit)
         self.saveButton.clicked.connect(self.saveSettings)
@@ -77,6 +79,14 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         self.radioButton_isWholePurge_Directory.setChecked(self.settingData["isDirPurge"])
         self.radioButton_isWholePurge_Files.setChecked(not self.settingData["isWholePurge"] 
                                                        and not self.settingData["isDirPurge"])
+
+    def openPurgeHistoryWidget(self):
+        """ Open PurgeHistoryWidget. """
+        cdnInstanceNoStr: str = self.cdnInstanceNo.text()
+        if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
+            return
+
+        self.purgeHistoryWidget = PurgeHistoryWidget(self, cdnInstanceNoStr)
 
     def submit(self):
         """ Call API and get result. """
