@@ -88,6 +88,48 @@ class CdnPlusPurgeQueryInfo(QueryInfo):
             queryString += parameterList[i]
         return queryString
 
+class GetCdnPlusPurgeHistoryList_QueryInfo(QueryInfo):
+    """ 
+    Concrete class of `QueryInfo`.
+
+    Has query parameter info about `getCdnPlusPurgeHistoryList` API.
+
+    Can make querystring from property.
+    """
+
+    def __init__(self, cdnInstanceNo: int, purgeIdList: list, responseFormatType: str) -> None:
+        super().__init__()
+        self.cdnInstanceNo = cdnInstanceNo
+        self.purgeIdList = purgeIdList
+        self.responseFormatType = responseFormatType
+
+    def makeQueryString(self) -> str:
+        """ Make querystring by parameter info. """
+        parameterList: list[str] = []
+
+        if self.cdnInstanceNo is None:
+            raise Exception("required parameter is None")
+
+        parameterList.append("cdnInstanceNo" + "=" + str(self.cdnInstanceNo))
+
+        if self.purgeIdList is not None:
+            element: str
+            for i, element in enumerate(self.purgeIdList):
+                parameterList.append("purgeIdList." + str(i+1) + "=" + element)
+
+        if self.responseFormatType is not None:
+            if self.responseFormatType in ("JSON", "XML"):
+                parameterList.append("responseFormatType" + "=" + str(self.responseFormatType))
+            else:
+                raise Exception("invalid responseFormatType")
+
+        queryString: str = ""
+        element: str
+        for i, element in enumerate(parameterList):
+            if i != 0:
+                queryString += "&"
+            queryString += parameterList[i]
+        return queryString
 
 class ApiHandler(metaclass=ABCMeta):
     """ 
@@ -153,6 +195,53 @@ class CdnPlusPurgeApiHandler(ApiHandler):
 
         return response.status_code, returnCode, returnMessage
 
+class GetCdnPlusPurgeHistoryList_ApiHandler(ApiHandler):
+    """ 
+    Concrete class of `ApiHandler`.
+
+    Can call `getCdnPlusPurgeHistoryList` API.
+    """
+
+    def __init__(self, queryInfo: GetCdnPlusPurgeHistoryList_QueryInfo) -> None:
+        super().__init__(queryInfo)
+
+        self._scheme: str = "https://"
+        self._host: str = "ncloud.apigw.ntruss.com"
+        self._path: str = "/cdn/v2/getCdnPlusPurgeHistoryList?"
+
+    def callApi(self):
+        """ Call `getCdnPlusPurgeHistoryList` API. Return info about calling api. """
+        try:
+            queryString = self._queryInfo.makeQueryString()
+
+            headers = PurgeUtil.make_headers("GET", self._path + queryString)
+
+            response = requests.get(self._scheme + self._host + self._path + queryString, headers=headers, timeout=5)
+
+            result = json.loads(response.text)
+        except:
+            raise
+
+        # Make return info
+        responseData = None
+        returnCode: str = ""
+        returnMessage: str = ""
+
+        if response.status_code == 200:
+            returnCode = result["getCdnPlusPurgeHistoryListResponse"]["returnCode"]
+            returnMessage = result["getCdnPlusPurgeHistoryListResponse"]["returnMessage"]
+            responseData = result["getCdnPlusPurgeHistoryListResponse"]
+        elif response.status_code == 401:
+            returnCode = result["error"]["errorCode"]
+            returnMessage = result["error"]["message"]
+        elif response.status_code == 500:
+            returnCode = result["responseError"]["returnCode"]
+            returnMessage = result["responseError"]["returnMessage"]
+        else:
+            returnCode = "-1"
+            returnMessage = "Unexpected Error"
+
+        return response.status_code, returnCode, returnMessage, responseData
 
 class PurgeUtil:
     """ 
