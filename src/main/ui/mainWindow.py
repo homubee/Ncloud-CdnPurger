@@ -26,6 +26,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         self.keySettingDialog: KeySettingDialog = None
         self.messageDialog: MessageDialog = None
+        self.purgeHistoryWidget: PurgeHistoryWidget = None
         self.settingData: dict = None
 
         self.setUiFunc()

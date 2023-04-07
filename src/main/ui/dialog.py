@@ -1,3 +1,4 @@
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget
 import dotenv
 
@@ -16,6 +17,9 @@ class Dialog(QWidget):
     def __init__(self, parent: QWidget):
         super().__init__()
         self.parentWindow = parent
+
+        # Disable MaximizeButton
+        self.setWindowFlags(Qt.WindowType.WindowTitleHint | Qt.WindowType.WindowMinimizeButtonHint | Qt.WindowType.WindowCloseButtonHint)
 
     def setPositionCenter(self):
         """ Set window position to center of it's parent. """

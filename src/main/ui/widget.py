@@ -37,6 +37,8 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
         super().__init__(parent)
         self.setupUi(self)
 
+        self.messageDialog: MessageDialog = None
+
         self.label_cdnInstanceId_value.setText(cdnInstanceNoStr)
         self.label_queryTime_value.setText(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
