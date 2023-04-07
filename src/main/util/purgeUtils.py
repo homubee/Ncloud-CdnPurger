@@ -7,6 +7,7 @@ import json
 
 from typing import Final
 from abc import ABCMeta, abstractmethod
+from dataclasses import dataclass
 
 import dotenv
 import requests
@@ -14,6 +15,12 @@ import requests
 
 dotenv.load_dotenv()
 
+@dataclass
+class ApiResponseDTO:
+    statusCode: int = -1
+    returnCode: str = ""
+    returnMessage: str = ""
+    responseData = None
 
 class QueryInfo(metaclass=ABCMeta):
     """ 
@@ -177,23 +184,24 @@ class RequestCdnPlusPurge_ApiHandler(ApiHandler):
             raise
 
         # Make return info
-        returnCode: str = ""
-        returnMessage: str = ""
+        responeDTO = ApiResponseDTO()
+        responeDTO.statusCode = response.status_code
 
         if response.status_code == 200:
-            returnCode = result["requestCdnPlusPurgeResponse"]["returnCode"]
-            returnMessage = result["requestCdnPlusPurgeResponse"]["returnMessage"]
+            responeDTO.returnCode = result["requestCdnPlusPurgeResponse"]["returnCode"]
+            responeDTO.returnMessage = result["requestCdnPlusPurgeResponse"]["returnMessage"]
+            responeDTO.responseData = result["requestCdnPlusPurgeResponse"]
         elif response.status_code == 401:
-            returnCode = result["error"]["errorCode"]
-            returnMessage = result["error"]["message"]
+            responeDTO.returnCode = result["error"]["errorCode"]
+            responeDTO.returnMessage = result["error"]["message"]
         elif response.status_code == 500:
-            returnCode = result["responseError"]["returnCode"]
-            returnMessage = result["responseError"]["returnMessage"]
+            responeDTO.returnCode = result["responseError"]["returnCode"]
+            responeDTO.returnMessage = result["responseError"]["returnMessage"]
         else:
-            returnCode = "-1"
-            returnMessage = "Unexpected Error"
+            responeDTO.returnCode = "-1"
+            responeDTO.returnMessage = "Unexpected Error"
 
-        return response.status_code, returnCode, returnMessage
+        return responeDTO
 
 class GetCdnPlusPurgeHistoryList_ApiHandler(ApiHandler):
     """ 
@@ -223,25 +231,24 @@ class GetCdnPlusPurgeHistoryList_ApiHandler(ApiHandler):
             raise
 
         # Make return info
-        responseData = None
-        returnCode: str = ""
-        returnMessage: str = ""
+        responeDTO = ApiResponseDTO()
+        responeDTO.statusCode = response.status_code
 
         if response.status_code == 200:
-            returnCode = result["getCdnPlusPurgeHistoryListResponse"]["returnCode"]
-            returnMessage = result["getCdnPlusPurgeHistoryListResponse"]["returnMessage"]
-            responseData = result["getCdnPlusPurgeHistoryListResponse"]
+            responeDTO.returnCode = result["getCdnPlusPurgeHistoryListResponse"]["returnCode"]
+            responeDTO.returnMessage = result["getCdnPlusPurgeHistoryListResponse"]["returnMessage"]
+            responeDTO.responseData = result["getCdnPlusPurgeHistoryListResponse"]
         elif response.status_code == 401:
-            returnCode = result["error"]["errorCode"]
-            returnMessage = result["error"]["message"]
+            responeDTO.returnCode = result["error"]["errorCode"]
+            responeDTO.returnMessage = result["error"]["message"]
         elif response.status_code == 500:
-            returnCode = result["responseError"]["returnCode"]
-            returnMessage = result["responseError"]["returnMessage"]
+            responeDTO.returnCode = result["responseError"]["returnCode"]
+            responeDTO.returnMessage = result["responseError"]["returnMessage"]
         else:
-            returnCode = "-1"
-            returnMessage = "Unexpected Error"
+            responeDTO.returnCode = "-1"
+            responeDTO.returnMessage = "Unexpected Error"
 
-        return response.status_code, returnCode, returnMessage, responseData
+        return responeDTO
 
 class PurgeUtil:
     """ 
