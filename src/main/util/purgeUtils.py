@@ -17,6 +17,7 @@ dotenv.load_dotenv()
 
 @dataclass
 class ApiResponseDTO:
+    """ DTO class for API response. """
     statusCode: int = -1
     returnCode: str = ""
     returnMessage: str = ""
