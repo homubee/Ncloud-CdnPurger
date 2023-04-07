@@ -33,7 +33,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         try:
             self.loadSettings()
         except Exception as e:
-            self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
+            self.messageDialog = MessageDialog(self, 0, "Error", "[Error] ", str(e))
 
         self.setWindowIcon(QtUtil.getIcon())
 
@@ -91,7 +91,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
     def submit(self):
         """ Call API and get result. """
         if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
-            self.messageDialog = MessageDialog(self, 0, "Ncloud API key 값을 설정하십시오.")
+            self.messageDialog = MessageDialog(self, 0, "Warning", "Ncloud API key 값을 설정하십시오.")
             return
 
         cdnInstanceNoStr: str = self.cdnInstanceNo.text()
@@ -130,15 +130,15 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         # Exception handling
         try:
-            statusCode, returnCode, returnMessage = apiHandler.callApi()
+            responseDTO = apiHandler.callApi()
         except Exception as e:
-            self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
+            self.messageDialog = MessageDialog(self, 0, "Error", "[Error] ", str(e))
             self.statusBar().showMessage("API call failed")
         else:
-            self.messageDialog = MessageDialog(self, 2, 
-                                               "Status Code : " + str(statusCode), 
-                                               "Return Code : " +  returnCode, 
-                                               "Return Message : " + returnMessage)
+            self.messageDialog = MessageDialog(self, 2, "Result", 
+                                               "Status Code : " + str(responseDTO.statusCode), 
+                                               "Return Code : " +  responseDTO.returnCode, 
+                                               "Return Message : " + responseDTO.returnMessage)
             self.statusBar().showMessage("API call successed")
 
     def resetTextEdit(self):
@@ -171,7 +171,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
     def isCdnInstanceNoDigit(self, cdnInstanceNoStr: str):
         """ Check if `isCdnInstanceNo` is digit or not. """
         if not cdnInstanceNoStr.isdigit():
-            self.messageDialog = MessageDialog(self, 0, "cdnInstanceNo는 숫자만 입력해야 합니다.")
+            self.messageDialog = MessageDialog(self, 0, "Warning", "cdnInstanceNo는 숫자만 입력해야 합니다.")
             return False
         return True
 
@@ -202,7 +202,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         self.clearSetting()
 
-        self.messageDialog = MessageDialog(self, 0, "설정이 초기화되었습니다.")
+        self.messageDialog = MessageDialog(self, 0, "Notice", "설정이 초기화되었습니다.")
         self.statusBar().showMessage("Setting cleared")
 
     def minimizeWindow(self):
@@ -219,14 +219,15 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     def showHelpMessage(self):
         """ Open MessageDialog for help message. """
-        self.messageDialog = MessageDialog(self, 2, 
+        self.messageDialog = MessageDialog(self, 2, "Help", 
                                            "1. Setting - Key Setting에서 Access Key와 Secret Key 값을 설정합니다.", 
-                                           "2. 프로그램 중앙의 입력창 내용을 작성합니다.", 
-                                           "3. OK 버튼을 눌러 API를 전송합니다.")
+                                           "2. 프로그램 중앙의 내용을 작성합니다.", 
+                                           "3. OK 버튼을 눌러 API를 전송합니다.",
+                                           "※ Check Log 버튼으로 로그 확인 가능")
 
     def showInfoMessage(self):
         """ Open MessageDialog for app info. """
-        self.messageDialog = MessageDialog(self, 2, "Ncloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
+        self.messageDialog = MessageDialog(self, 2, "About", "Ncloud CdnPurger " + MainWindow.VERSION, "Copyright 2023 Homubee")
 
     def clearSetting(self):
         """ Clear all settings. """

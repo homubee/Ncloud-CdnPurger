@@ -66,22 +66,22 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
 
         # Exception handling
         try:
-            statusCode, returnCode, returnMessage, responseData = apiHandler.callApi()
+            responseDTO = apiHandler.callApi()
         except Exception as e:
-            self.messageDialog = MessageDialog(self, 0, "[Error] ", str(e))
+            self.messageDialog = MessageDialog(self, 0, "Error", "[Error] ", str(e))
             self.close()
         else:
-            self.messageDialog = MessageDialog(self, 2, 
-                                               "Status Code : " + str(statusCode), 
-                                               "Return Code : " +  returnCode, 
-                                               "Return Message : " + returnMessage)
+            self.messageDialog = MessageDialog(self, 2, "Result", 
+                                               "Status Code : " + str(responseDTO.statusCode), 
+                                               "Return Code : " +  responseDTO.returnCode, 
+                                               "Return Message : " + responseDTO.returnMessage)
 
             # Close widget when response is not succeeded.
-            if (statusCode != 200):
+            if (responseDTO.statusCode != 200):
                 self.close()
                 return
 
-            cdnPlusPurgeHistoryList = responseData["cdnPlusPurgeHistoryList"]
+            cdnPlusPurgeHistoryList = responseDTO.responseData["cdnPlusPurgeHistoryList"]
 
             for index, history in enumerate(cdnPlusPurgeHistoryList):
                 requestDate = history["requestDate"].replace("T", " ").split("+")[0]
