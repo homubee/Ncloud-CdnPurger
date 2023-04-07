@@ -165,7 +165,7 @@
     <item>
      <widget class="QLabel" name="label_domainEdit">
       <property name="text">
-       <string>• Purge할 도메인명을 입력하세요.</string>
+       <string>• Purge할 도메인 ID를 입력하세요.</string>
       </property>
      </widget>
     </item>
@@ -245,7 +245,7 @@
     </property>
     <addaction name="action_minimize"/>
     <addaction name="action_maximize"/>
-    <addaction name="action_normal"/>
+    <addaction name="action_normalize"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuSetting"/>
@@ -293,7 +293,7 @@
     <string>Minimize</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+Alt+N</string>
+    <string>Ctrl+Alt+M</string>
    </property>
   </action>
   <action name="action_maximize">
@@ -304,9 +304,9 @@
     <string>Ctrl+Shift+M</string>
    </property>
   </action>
-  <action name="action_normal">
+  <action name="action_normalize">
    <property name="text">
-    <string>Normal</string>
+    <string>Normalize</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>

@@ -37,13 +37,13 @@ class KeySettingDialog(Dialog, QtUtil.loadUiClass("./res/ui/KeySettingDialog.ui"
 
         self.messageDialog: MessageDialog = None
 
-        self.setPositionCenter()
-
         self.setUiFunc()
 
         self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
+
+        self.setPositionCenter()
 
     def setUiFunc(self):
         """ Connect ui and function. """
@@ -85,13 +85,13 @@ class MessageDialog(Dialog, QtUtil.loadUiClass("./res/ui/MessageDialog.ui")):
 
         self.makeMessageString(newlineNum, args)
 
-        self.setPositionCenter()
-
         self.setUiFunc()
 
         self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
+
+        self.setPositionCenter()
 
     def makeMessageString(self, newlineNum, texts):
         """ Make formatted message string for dialog. """

@@ -59,7 +59,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
         self.action_minimize.triggered.connect(self.minimizeWindow)
         self.action_maximize.triggered.connect(self.maximizeWindow)
-        self.action_normal.triggered.connect(self.makeNormalWindow)
+        self.action_normalize.triggered.connect(self.normalizeWindow)
 
         self.action_help.triggered.connect(self.showHelpMessage)
         self.action_about.triggered.connect(self.showInfoMessage)
@@ -213,7 +213,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         """ Maximize window. """
         self.showMaximized()
 
-    def makeNormalWindow(self):
+    def normalizeWindow(self):
         """ Make normal window. """
         self.showNormal()
 

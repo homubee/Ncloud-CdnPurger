@@ -40,11 +40,11 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
         self.label_cdnInstanceId_value.setText(cdnInstanceNoStr)
         self.label_queryTime_value.setText(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-        self.setPositionCenter()
-
         self.setWindowIcon(QtUtil.getIcon())
 
         self.show()
+
+        self.setPositionCenter()
 
         model = QStandardItemModel()
         model.setHorizontalHeaderLabels(["일시", "범위", "대상", "결과"])
