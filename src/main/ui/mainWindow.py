@@ -18,7 +18,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
     Has some methods about ui.
     """
 
-    VERSION: Final = "1.0.0"
+    VERSION: Final = "1.1.0"
 
     def __init__(self):
         super().__init__()

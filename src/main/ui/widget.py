@@ -55,6 +55,7 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
         self.setTableSize()
 
     def setTableSize(self):
+        """ Set table size fit to contents. """
         # Resize row
         self.tableView_historyList.resizeRowsToContents()
 
@@ -62,6 +63,7 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
         self.setColumnSize()
 
     def setTableRow(self, model: QStandardItemModel, cdnInstanceNo: int):
+        """ Call api and set data to table. """
 
         queryInfo = GetCdnPlusPurgeHistoryList_QueryInfo(cdnInstanceNo, None, "JSON")
         apiHandler = GetCdnPlusPurgeHistoryList_ApiHandler(queryInfo)
@@ -108,6 +110,7 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
             self.tableView_historyList.setModel(model)
 
     def setColumnSize(self):
+        """ Set column width. """
         col_width = self.tableView_historyList.width()
         self.tableView_historyList.setColumnWidth(0, int(col_width*35/100))
         self.tableView_historyList.setColumnWidth(1, int(col_width*10/100))
@@ -115,5 +118,6 @@ class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget
         self.tableView_historyList.setColumnWidth(3, int(col_width*20/100))
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
+        """ Overrides resizeEvent """
         self.setColumnSize()
         return super().resizeEvent(a0)
