@@ -1,3 +1,4 @@
+import os
 import json
 from typing import Final
 
@@ -9,7 +10,7 @@ from util.qtUtils import QtUtil
 from ui.dialog import KeySettingDialog, MessageDialog
 from ui.widget import PurgeHistoryWidget
 
-class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
+class MainWindow(QMainWindow, QtUtil.loadUiClass(os.path.join("res", "ui", "MainWindow.ui"))):
     """ 
     It is a first ui class that will be shown to user.
 
@@ -67,8 +68,8 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     def loadSettings(self):
         """ Load settings and set setting form ui. """
-        if SystemUtil.isFileExist("./api_settings.json"):
-            with open("./api_settings.json", "r", encoding="utf-8") as file:
+        if SystemUtil.isFileExist(os.path.join("api_settings.json")):
+            with open(os.path.join("api_settings.json"), "r", encoding="utf-8") as file:
                 self.settingData = json.load(file)
         else:
             return
@@ -83,6 +84,10 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     def openPurgeHistoryWidget(self):
         """ Open PurgeHistoryWidget. """
+        if PurgeUtil.ACCESS_KEY is None or PurgeUtil.SECRET_KEY is None:
+            self.messageDialog = MessageDialog(self, 0, "Warning", "Ncloud API key 값을 설정하십시오.")
+            return
+
         cdnInstanceNoStr: str = self.cdnInstanceNo.text()
         if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
             return
@@ -154,7 +159,7 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
         if not self.isCdnInstanceNoDigit(cdnInstanceNoStr):
             return
         # Write setting file
-        with open("./api_settings.json", "w", encoding="utf-8") as file:
+        with open(os.path.join("api_settings.json"), "w", encoding="utf-8") as file:
             cdnInstanceNo: int = int(cdnInstanceNoStr)
             isWholeDomain: bool = self.radioButton_isWholeDomain_Yes.isChecked()
             isWholePurge: bool = self.radioButton_isWholePurge_Whole.isChecked()
@@ -198,8 +203,8 @@ class MainWindow(QMainWindow, QtUtil.loadUiClass("./res/ui/MainWindow.ui")):
 
     def removeSettingFiles(self):
         """ Remove all setting file. """
-        SystemUtil.removeFile("./.env")
-        SystemUtil.removeFile("./api_settings.json")
+        SystemUtil.removeFile(os.path.join("CdnPurger.env"))
+        SystemUtil.removeFile(os.path.join("api_settings.json"))
 
         self.clearSetting()
 

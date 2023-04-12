@@ -13,7 +13,7 @@ import dotenv
 import requests
 
 
-dotenv.load_dotenv()
+dotenv.load_dotenv("CdnPurger.env")
 
 @dataclass
 class ApiResponseDTO:

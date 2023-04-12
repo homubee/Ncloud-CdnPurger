@@ -1,7 +1,7 @@
 import unittest
 import sys
 
-sys.path.insert(1, "./src")
+sys.path.insert(1, "src")
 
 from main.util.purgeUtils import RequestCdnPlusPurge_QueryInfo, GetCdnPlusPurgeHistoryList_QueryInfo
 

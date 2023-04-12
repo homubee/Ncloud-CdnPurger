@@ -1,3 +1,4 @@
+import os
 from PyQt5 import uic
 from PyQt5.QtGui import QIcon
 from util.systemUtils import SystemUtil
@@ -17,4 +18,4 @@ class QtUtil:
     @staticmethod
     def getIcon() -> QIcon:
         """ Return icon from `./res/icon/logo.ico`. """
-        return QIcon(SystemUtil.resource_path("./res/icon/logo.ico"))
+        return QIcon(SystemUtil.resource_path(os.path.join("res", "icon", "logo.ico")))
