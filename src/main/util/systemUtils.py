@@ -37,8 +37,10 @@ class SystemUtil:
         """ Make file if it is not in `filepath`, and return `True`. Otherwise do nothing, and return `False`. """
         file_not_exists: bool = not SystemUtil.isFileExist(filepath)
         if file_not_exists:
-            filepath = filepath.replace("\\", "/")
-            os.makedirs(filepath[:filepath.rfind("/")], exist_ok=True)
+            filepath_conv = filepath.replace("\\", "/")
+            find_index = filepath_conv.rfind("/")
+            if find_index != -1:
+                os.makedirs(filepath_conv[:find_index], exist_ok=True)
             with open(filepath, "w", encoding="utf-8"):
                 pass
         return file_not_exists

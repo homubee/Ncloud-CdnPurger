@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget
 import dotenv
@@ -28,7 +30,7 @@ class Dialog(QWidget):
 
         self.move(self.parentWindow.x()+offsetWidth, self.parentWindow.y()+offsetHeight)
 
-class KeySettingDialog(Dialog, QtUtil.loadUiClass("./res/ui/KeySettingDialog.ui")):
+class KeySettingDialog(Dialog, QtUtil.loadUiClass(os.path.join("res", "ui", "KeySettingDialog.ui"))):
     """ 
     The ui class for getting key setting and saving it.
 
@@ -58,8 +60,8 @@ class KeySettingDialog(Dialog, QtUtil.loadUiClass("./res/ui/KeySettingDialog.ui"
         """ Save key value to .env file. """
         # .env setting
         # if file does not exist, make new .env file
-        SystemUtil.makeFile("./.env")
-        envFile = dotenv.find_dotenv()
+        SystemUtil.makeFile(os.path.join("CdnPurger.env"))
+        envFile = dotenv.find_dotenv("CdnPurger.env")
 
         if self.accessKeyInput.text() == "" or self.secretKeyInput.text() == "":
             self.messageDialog = MessageDialog(self, 0, "Warning", "Key 값을 모두 입력해주십시오.")
@@ -76,7 +78,7 @@ class KeySettingDialog(Dialog, QtUtil.loadUiClass("./res/ui/KeySettingDialog.ui"
         """ Finish the dialog. """
         self.close()
 
-class MessageDialog(Dialog, QtUtil.loadUiClass("./res/ui/MessageDialog.ui")):
+class MessageDialog(Dialog, QtUtil.loadUiClass(os.path.join("res", "ui", "MessageDialog.ui"))):
     """ 
     The ui class for displaying message.
 

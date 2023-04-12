@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 
-sys.path.insert(1, "./src")
+sys.path.insert(1, "src")
 
 from main.util.systemUtils import SystemUtil
 

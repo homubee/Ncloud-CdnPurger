@@ -1,3 +1,4 @@
+import os
 import datetime
 
 from PyQt5.QtCore import Qt
@@ -28,7 +29,7 @@ class Widget(QWidget):
 
         self.move(self.parentWindow.x()+offsetWidth, self.parentWindow.y()+offsetHeight)
 
-class PurgeHistoryWidget(Widget, QtUtil.loadUiClass("./res/ui/PurgeHistoryWidget.ui")):
+class PurgeHistoryWidget(Widget, QtUtil.loadUiClass(os.path.join("res", "ui", "PurgeHistoryWidget.ui"))):
     """ 
     The ui class for purge history.
     """
